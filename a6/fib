@@ -1,0 +1,30 @@
+#! /bin/bash
+
+# outputs the nth fibonacci number
+# also it returns how many invocations were done!
+
+# first check $1 is < 2
+n=$1
+if [ $n -lt 2 ]
+then
+	echo 1
+	exit 1
+fi
+
+# n >= 2 --> fib(n-1) + fib(n-2)
+
+((n1=$n-1))
+((n2=$n-2))
+
+# First recursion
+f1=`$0 $n1`
+r1=$?
+
+# Second recursion
+f2=`$0 $n2`
+r2=$?
+
+# output fibonacci number
+expr $f1 + $f2
+# return total # of invocations
+exit `expr $r1 + $r2 + 1`

@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#define LINESIZE 200
+
+int main(int argc, char *argv[]) {
+	if (argc == 1) {
+		printf("Usage: diagonal2 <string1> [<string2> ... ]\n");
+		return -1;
+	}
+	
+	//create a file so that 16 rows of empty will appear with od -c command
+	int fd = open("diagonal2.out", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+	char space = ' ';
+	for(int line=0; line<LINESIZE; line++)
+		for(int column=0; column<LINESIZE; column++)
+			write(fd, &space, 1);
+	
+	for(int index=1; index<argc; index++) {
+		int letters=strlen(argv[index]);
+		int offset = LINESIZE * LINESIZE * (index - 1);
+		for(int k=0; k<letters;k++) {
+			if(index % 2 ==1) {
+				lseek(fd, offset + (LINESIZE+1)*k, SEEK_SET);
+			}
+			else {
+				lseek(fd, offset + (LINESIZE*(k+1) - (k+1)), SEEK_SET);
+			}
+			write(fd, &argv[index][k], 1);
+		}
+	}
+
+	
+	close(fd);
+	puts("diagonal2.out has been created. Use od -c diagonal2.out to see the contents.");
+}
